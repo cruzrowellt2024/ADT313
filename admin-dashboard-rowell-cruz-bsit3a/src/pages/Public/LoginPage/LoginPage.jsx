@@ -14,7 +14,7 @@ function Login() {
   const userInputDebounce = useDebounce({ email, password }, 2000);
   const [debounceState, setDebounceState] = useState(false);
   const [status, setStatus] = useState('idle');
-
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleShowPassword = useCallback(() => {
@@ -43,7 +43,6 @@ function Login() {
   const handleLogin = async () => {
     const data = { email, password };
     setStatus('loading');
-    console.log(data);
 
     await axios({
       method: 'post',
@@ -53,11 +52,13 @@ function Login() {
     })
       .then((res) => {
         console.log(res);
+        //store response access token to localstorage
         localStorage.setItem('accessToken', res.data.access_token);
-        navigate('/main/dashboard');
+        navigate('/main/movies');
         setStatus('idle');
       })
       .catch((e) => {
+        setError(e.response.data.message);
         console.log(e);
         setStatus('idle');
         // alert(e.response.data.message);
